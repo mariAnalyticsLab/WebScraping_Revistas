@@ -10,8 +10,9 @@ from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-import time
 import os
+from selenium.webdriver.chrome.options import Options
+from multiprocessing import Pool
 
 #Abrir archivo 
 df = pd.read_csv(r"C:\Users\maria\Downloads\AUTHORS_master.csv",header=0)
@@ -30,10 +31,22 @@ print(urls)
 
 # print(paragraphs)
 
+# Create ChromeOptions object
+chrome_options = Options()
+
+# Add the headless argument
+chrome_options.add_argument("--headless=new") # Or "--headless" for older versions
+# (Optional) Add other useful arguments for headless mode
+chrome_options.add_argument("--disable-gpu") # Recommended for Windows
+chrome_options.add_argument("--no-sandbox") # Recommended for Linux environments
+chrome_options.add_argument("--window-size=1920,1080")
 or_links=[]
-driver=webdriver.Chrome()
-time.sleep(5)  
-for i, url in enumerate(urls):
+
+def scrape(url):
+    driver=webdriver.Chrome(chrome_options)
+    # driver=webdriver.Chrome()
+    time.sleep(5)  
+    # for i, url in enumerate(urls):
     driver.get(url)
     time.sleep(5)
     #Scroll a lo largo de la página
@@ -57,19 +70,30 @@ for i, url in enumerate(urls):
         p = orcid.get_attribute('href')
         if p:
             or_l.append(p)
-    or_l.append(or_links)
-       
-OL=set(or_links)
-OLS=list(OL)
+    or_links.append(or_l)
+    print(or_l)
+    driver.quit()
+    return or_links
 
-#Directorio
-os.chdir(r"C:/Users\maria\OneDrive\Documents\UNIIE")
+if __name__ == "__main__":
+    urls=urls.tolist()
+    
+    # Crea un pool con el número de procesos igual al número de CPUs
+    with Pool(os.cpu_count()) as pool:
+        resultados = pool.map(scrape, urls)
+        print(resultados)
+               
+    OL=set(resultados)
+    OLS=list(OL)
+    print(OLS)
+    #Directorio
+    os.chdir(r"C:/Users\maria\OneDrive\Documents\UNIIE")
 
 
-# Crear dataframes
-df_orcids = pd.DataFrame(OLS, columns=['ClaveOrcid'])
-print(df_orcids)
-# df_correos = pd.DataFrame(correos, columns=['Correos'])
+    # Crear dataframes
+    df_orcids = pd.DataFrame(OLS, columns=['ClaveOrcid'])
+    print(df_orcids)
+    # df_correos = pd.DataFrame(correos, columns=['Correos'])
 
 
-df_orcids.to_csv('ClavesOrcid.csv', header=True, index=True)
+    df_orcids.to_csv('ClavesOrcid.csv', header=True, index=True)
