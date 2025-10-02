@@ -18,7 +18,7 @@ from threading import Thread
 #Abrir archivo 
 df = pd.read_csv(r"C:\Users\maria\Downloads\AUTHORS_master.csv",header=0)
 urls=df['article_url']
-print(urls)
+# print(urls)
 si=urls[60:70]
 # ejemplo=urls[1]
 # ejemplo="https://acreditas.com/index.php/acreditas/article/view/257"
