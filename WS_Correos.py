@@ -15,7 +15,7 @@ import fitz  # PyMuPDF
 from urllib.parse import unquote, urlparse, parse_qs
 import urllib3
 from selenium.webdriver.chrome.options import Options
-
+from selenium.common.exceptions import NoSuchElementException 
 
 chrome_options = Options()
 
