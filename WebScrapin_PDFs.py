@@ -23,7 +23,7 @@ df = pd.read_csv(r"C:/Users\maria\OneDrive\Documents\UNIIE\PDFS2.csv",header=0)
 df_p=pd.DataFrame(df)
 all_links=df_p["article_url"].dropna().astype(str).tolist()
 # all_links = df['URL'].dropna().astype(str).tolist()
-prueba=all_links[551:650]#Listo para continuar 10 de oct 
+prueba=all_links[2001:2250]#Correr
 # ejemplo=url.iloc[0]
 # print(all_links)
 
@@ -72,8 +72,11 @@ def scrape_pdf(url):
 
     time.sleep(5)
     pdfs1 = driver.find_elements("class name", "galley-link")
-    pdfs2 = driver.find_elements("xpath", "//a[contains(@class, 'obj_galley_link') and contains(@class, 'pdf')]")
-    pdfs=pdfs1+pdfs2
+    pdfs2=driver.find_elements(By.XPATH, "//a[@class='obj_galley_link']")
+    pdfs4=driver.find_elements(By.XPATH, "//a[@class='obj_galley_link pdf']")
+    pdfs3=driver.find_elements(By.XPATH, "//a[@class='btn btn-primary']")
+    # pdfs1 = driver.find_elements("tag name", "a")
+    pdfs=pdfs1+pdfs2+pdfs3+pdfs4
     for pdf in pdfs:
         p = pdf.get_attribute('href')
         if p:
